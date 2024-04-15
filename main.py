@@ -1,8 +1,9 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app import schemas, crud
 from app.database import SessionLocal
+
 
 app = FastAPI()
 
@@ -21,11 +22,10 @@ def read_authors(skip: int = 0, limit: int = 100, db: Session = Depends(get_db))
     return authors
 
 
-@app.get("/authors/{author_id}", response_model=schemas.Author)
+@app.get("/authors/{author_id}/", response_model=schemas.Author)
 def read_author(author_id: int, db: Session = Depends(get_db)):
     db_author = crud.get_author_by_id(db, author_id=author_id)
     if db_author is None:
-        from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="User not found")
     return db_author
 
@@ -43,7 +43,7 @@ def read_books(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_books(db, skip=skip, limit=limit)
 
 
-@app.get("/books/{author_id}", response_model=list[schemas.Book])
+@app.get("/books/{author_id}/", response_model=list[schemas.Book])
 def read_books_by_author(author_id: int, db: Session = Depends(get_db)):
     return crud.get_books_by_author(db=db, author_id=author_id)
 

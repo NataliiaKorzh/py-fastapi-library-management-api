@@ -31,12 +31,9 @@ def get_books_by_author(db: Session, author_id: int):
 
 
 def create_book(db: Session, book: schemas.BookCreate, author_id: int):
-    db_book = models.Book(
-        title=book.title,
-        summary=book.summary,
-        publication_date=book.publication_date,
-        author_id=author_id,
-    )
+    book_data = book.dict()
+    book_data["author_id"] = author_id
+    db_book = models.Book(**book_data)
     db.add(db_book)
     db.commit()
     db.refresh(db_book)
